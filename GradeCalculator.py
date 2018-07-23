@@ -108,7 +108,7 @@ def print_all(name_stud):
                                                   grade, exam, final, assignment, others))
             whole_data += chunk
     except sqlite3.OperationalError:
-        print("nothing")
+        print("added nothing")
     return whole_data
 
 def create(student_name):
@@ -118,7 +118,7 @@ def create(student_name):
                     Assignment real, others real)")
         
         conn.commit()
-        message = "Looks like its your first time"
+        print("Looks like its your first time")
     except sqlite3.OperationalError:
-        message = "Looks like we already met (^_^)"
-    return message
+        print("Looks like we already met (^_^)")
+    
