@@ -1,6 +1,4 @@
-#parent class can be initialized later then the derived class?
-
-from GradeCalculator import create, Subject, print_all, add_subject, delete_sub
+from GradeCalculator import create, Subject, print_all, add_subject, delete_sub, calc_gpa
 import tkinter as tk
 from tkinter import Entry, W, E, Message, StringVar, Text, END
 from tkinter import font  as tkfont
@@ -47,23 +45,24 @@ class Application(tk.Tk):
         else:
             return false
 
-#First page to be displayed in the parent frame 
+    #First page to be displayed in the parent frame
 class MainPage(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent) #initializing parent class
+        tk.Frame.__init__(self, parent, bg="lavender") #initializing parent class
         self.controller = controller
 
         #Labels to be displayed
-        label = tk.Label(self, text="Welcome to the Grade Calculator", anchor="center", bg="lavender",
-                         font = controller.title_font)
+        label = tk.Label(self, text="Welcome to the Grade Calculator",
+                         anchor="center", bg="lavender",
+                        font = controller.title_font)
         label1 = tk.Label(self, text="Please enter your name to start:",
-                          font="times 30", bg="lavender")
+                              font="times 30", bg="lavender")
 
         #entry 
-        self.entry = Entry(self,bg = "yellow")
+        self.entry = Entry(self,bg = "cyan")
         button1 = tk.Button(self, text="Save and Continue",
                             command= lambda: self.cmmd(), height =3,
-                             bg="green")
+                                bg="green")
 
         #gridding
         label.grid(row=3, column=0, rowspan=2, columnspan=10, sticky="EW")
@@ -115,33 +114,40 @@ class MenuPage(tk.Frame):
 #print page to be displayed along with the data of user
 class PrintPage(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent,bg="lavender")
         self.controller = controller
 
         
-        label = tk.Label(self, text="Your progess so far:")
-
+        label = tk.Label(self, text="Your progess so far",font="Times 30", bg="lavender")
+        try:
+            label1 = tk.Label(self,
+                          text="Your G.P.A. is {:.2f}".format(calc_gpa(controller.student_name)),
+                              bg="azure")
+        except (ZeroDivisionError, sqlite3.OperationalError) as e:
+            label1 = tk.Label(self,
+                          text="Your G.P.A. is 0.", bg="azure" )
         #getting data as a string from database using print_all function
         whole_data= print_all(controller.student_name)
 
-        text = Text(self, height=20, width=80)
+        text = Text(self, height=20, width=80, bg="azure")
         text.insert(END, whole_data)
 
         button = tk.Button(self, text ="Home Page",
                            command=lambda:controller.show_frame(MenuPage),
                            height=2)
-
+        
         #gridding
         label.grid()
-        text.grid(row=1)
-        button.grid(row=3,column=0,sticky=W+E)
+        label1.grid(row=1)
+        text.grid(row=2)
+        button.grid(row=4,column=0,sticky=W+E)
         print(whole_data)
         
         
 #full add page for adding subject with full information
 class FullAddPage(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg="lavender")
         self.controller = controller
 
         #labels and entry
@@ -150,31 +156,31 @@ class FullAddPage(tk.Frame):
         vcmd = (self.register(controller.numValidate), '%P')
         
         label_subject = tk.Label(self, text="Name of the subject: ",bg="lavender")
-        self.subject = Entry(self)
+        self.subject = Entry(self, bg="cyan")
         
         label_credit = tk.Label(self,text="Credit hours:",bg="lavender")
-        self.credit = Entry(self, validate="key", validatecommand=vcmd)
+        self.credit = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
 
         label_exam = tk.Label(self, text="Percentage in exam:",bg="lavender")
-        self.exam = Entry(self, validate="key", validatecommand=vcmd)
+        self.exam = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
         label_weight = tk.Label(self, text="Weight in it:",bg="lavender")
-        self.weight_exam = Entry(self, validate="key", validatecommand=vcmd)
+        self.weight_exam = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
 
         label_weight1 = tk.Label(self, text="Weight in it:",bg="lavender")
         label_weight2 = tk.Label(self, text="Weight in it:",bg="lavender")
         label_weight3 = tk.Label(self, text="Weight in it:",bg="lavender")
         
         label_final = tk.Label(self, text="Percentage in final:",bg="lavender")
-        self.final = Entry(self,validate="key", validatecommand=vcmd)
-        self.weight_final = Entry(self, validate="key", validatecommand=vcmd)
+        self.final = Entry(self, bg="cyan",validate="key", validatecommand=vcmd)
+        self.weight_final = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
 
         label_assignment = tk.Label(self, text="Percentage in assignment:"
                                     ,bg="lavender")
-        self.assignment = Entry(self, validate="key", validatecommand=vcmd)
-        self.weight_assignment = Entry(self, validate="key", validatecommand=vcmd)
+        self.assignment = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
+        self.weight_assignment = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
         label_others = tk.Label(self, text="Percentage in others:",bg="lavender")
-        self.others = Entry(self, validate="key", validatecommand=vcmd)
-        self.weight_others = Entry(self, validate="key", validatecommand=vcmd)
+        self.others = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
+        self.weight_others = Entry(self, bg="cyan", validate="key", validatecommand=vcmd)
 
         button1 = tk.Button(self, text="Save and Continue",
                             command=lambda: self.save_all(),bg="lavender",
@@ -232,13 +238,14 @@ class FullAddPage(tk.Frame):
 
 class AddPage(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg="lavender")
         self.controller = controller
 
         label_main = tk.Label(self, text="Enter all your details carefully",
+                              bg="lavender",
                               font=controller.title_font)
 
-        label1 =tk.Label(self, text="Name of the subject")
+        label1 =tk.Label(self, text="Name of the subject", bg="lavender")
         self.name = Entry(self)
 
         vcmd = (self.register(controller.numValidate), '%P')
@@ -252,7 +259,7 @@ class AddPage(tk.Frame):
 
 
         #gridding
-        label_main.grid()
+        label_main.grid(columnspan=3)
         label1.grid(row=1)
         self.name.grid(row=1,column=1)
         label2.grid(row=2)
@@ -274,21 +281,24 @@ class AddPage(tk.Frame):
 
 class Delete(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg="lavender")
         self.controller = controller
 
         label= tk.Label(self, text="Please enter the name of the subject you want to delete",
-                        font="times 28", bg="lavender")
+                        font="Times 30", bg="lavender")
         self.name = Entry(self)
         button1 = tk.Button(self, text="Save and Continue", command=lambda: self.save_all())
 
         
-        label.grid(row=0,column=0, rowspan=100)
-        self.name.grid(row=2)
+        label.grid(row=0,column=0, pady=20)
+        self.name.grid(row=2, pady=10)
         button1.grid(row=3)
         
     def save_all(self):
-        delete_sub(self.controller.student_name, self.name.get())
+        try:
+            delete_sub(self.controller.student_name, self.name.get())
+        except sqlite3.OperationalError:
+            print("Wrong information")
         self.controller.show_frame(MenuPage)
         
 
